@@ -1,6 +1,8 @@
 package com.example.SistemaBiblioteca_api.Controller;
 
 
+import com.example.SistemaBiblioteca_api.dto.AutorRequestDTO;
+import com.example.SistemaBiblioteca_api.dto.AutorResponseDTO;
 import com.example.SistemaBiblioteca_api.entity.Autor;
 import com.example.SistemaBiblioteca_api.service.AutorService;
 import jakarta.validation.Valid;
@@ -20,22 +22,22 @@ public class AutorController {
     private final AutorService autorService;
 
     @PostMapping
-    public ResponseEntity<Autor> salvarAutor(@Valid  @RequestBody Autor autor){
-        Autor autorCriado = autorService.salvarAutor(autor);
+    public ResponseEntity<AutorResponseDTO> salvarAutor(@Valid  @RequestBody AutorRequestDTO autorRequestDTO){
+        AutorResponseDTO autorCriado = autorService.salvarAutor(autorRequestDTO);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(autorCriado);
     }
 
     @GetMapping
-    public ResponseEntity<List<Autor>> listarAutor(){
-        List<Autor> listaAutores = autorService.listarAutor();
+    public ResponseEntity<List<AutorResponseDTO>> listarAutor(){
+        List<AutorResponseDTO> listaAutores = autorService.listarAutor();
 
         return ResponseEntity.ok(listaAutores);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Autor> buscarAutorId(@PathVariable Long id){
-        Optional<Autor> autorEncontrado = autorService.buscarAutorId(id);
+    public ResponseEntity<AutorResponseDTO> buscarAutorId(@PathVariable Long id){
+        Optional<AutorResponseDTO> autorEncontrado = autorService.buscarAutorId(id);
 
         return autorEncontrado
                 .map(autor -> ResponseEntity.ok(autor))
@@ -43,10 +45,13 @@ public class AutorController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Autor> atualizarAutor(@Valid @PathVariable Long id, @RequestBody Autor autor){
-        Autor autorAtualizado = autorService.atualizarAutor(id,autor);
+    public ResponseEntity<AutorResponseDTO> atualizarAutor(@PathVariable Long id,@Valid @RequestBody AutorRequestDTO autorRequestDTO){
+        Optional<AutorResponseDTO> autorAtualizado = autorService.atualizarAutor(id,autorRequestDTO);
 
-        return ResponseEntity.ok(autorAtualizado);
+        return autorAtualizado
+                .map(autorResponseDTO -> ResponseEntity.ok(autorResponseDTO))
+                .orElseGet(() -> ResponseEntity.notFound().build());
+
     }
 
     @DeleteMapping("/{id}")

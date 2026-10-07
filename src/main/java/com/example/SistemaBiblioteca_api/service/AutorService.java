@@ -1,7 +1,10 @@
 package com.example.SistemaBiblioteca_api.service;
 
 
+import com.example.SistemaBiblioteca_api.dto.AutorRequestDTO;
+import com.example.SistemaBiblioteca_api.dto.AutorResponseDTO;
 import com.example.SistemaBiblioteca_api.entity.Autor;
+import com.example.SistemaBiblioteca_api.mapper.AutorMapper;
 import com.example.SistemaBiblioteca_api.repository.AutorRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -14,38 +17,47 @@ import java.util.Optional;
 public class AutorService {
 
     private final AutorRepository autorRepository;
+    private final AutorMapper autorMapper;
 
     // metodo para salvar autor
-    public Autor salvarAutor(Autor autor){
-        return autorRepository.save(autor);
+    public AutorResponseDTO salvarAutor(AutorRequestDTO autorRequestDTO){
+        Autor autor = autorMapper.toEntity(autorRequestDTO);
+        Autor autorSalvo = autorRepository.save(autor);
+
+        return autorMapper.toDto(autorSalvo);
     }
 
-    public List<Autor> listarAutor(){
-        return autorRepository.findAll();
+    public List<AutorResponseDTO> listarAutor(){
+        List<Autor> listarAutor = autorRepository.findAll();
+
+        List<AutorResponseDTO> autorResponseDTOList = listarAutor.stream()
+                .map(autorMapper::toDto)
+                .toList();
+
+        return autorResponseDTOList;
     }
+
     // no Optional ja tem uma mensagem de erro
-    public Optional<Autor> buscarAutorId(Long id){
-        return autorRepository.findById(id);
+    public Optional<AutorResponseDTO> buscarAutorId(Long id){
+        // o optional tem o metodo map para fazer a transfromação
+        return autorRepository.findById(id)
+                .map(autorMapper::toDto);
     }
 
     public void deletarAutor(Long id){
        autorRepository.deleteById(id);
     }
 
-    public Autor atualizarAutor(Long id,Autor autor) {
-        Optional<Autor> autorExistente = buscarAutorId(id);
+    public Optional<AutorResponseDTO> atualizarAutor(Long id,AutorRequestDTO autorRequestDTO) {
+        return autorRepository.findById(id)
+                .map(autor -> {
+                      autor.setNome(autorRequestDTO.getNome());
+                      autor.setNacionalidade(autorRequestDTO.getNacionalidade());
 
-        if (autorExistente.isPresent()) {
-            // Você pega o Autor que estava dentro do Optional.
-            Autor autorEncontrado = autorExistente.get();
+                      Autor autorAtualizado = autorRepository.save(autor);
 
-            autorEncontrado.setNome(autor.getNome());
-            autorEncontrado.setNacionalidade(autor.getNacionalidade());
-
-            return autorRepository.save(autorEncontrado);
-        } else {
-            throw new RuntimeException("Informe um id de um autor que exista");
-        }
+                      return autorMapper.toDto(autorAtualizado);
+                });
     }
 
 }
