@@ -15,12 +15,9 @@ import java.time.LocalDateTime;
 @Builder
 public class LivroResponseDto {
 
-
     private Long id;
     private String nome;
     private String isbn;
     private LocalDate dataPublicacao;
-    private  AutorResponseDTO autor;
-
-
+    private  AutorResumoDto autor;
 }

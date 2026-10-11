@@ -1,15 +1,13 @@
 package com.example.SistemaBiblioteca_api.service;
 
 
-import com.example.SistemaBiblioteca_api.dto.AutorRequestDTO;
-import com.example.SistemaBiblioteca_api.dto.AutorResponseDTO;
 import com.example.SistemaBiblioteca_api.dto.LivroResponseDto;
 import com.example.SistemaBiblioteca_api.dto.LivroSalvarDto;
 import com.example.SistemaBiblioteca_api.entity.Autor;
 import com.example.SistemaBiblioteca_api.entity.Livro;
+import com.example.SistemaBiblioteca_api.mapper.LivroMapper;
 import com.example.SistemaBiblioteca_api.repository.AutorRepository;
 import com.example.SistemaBiblioteca_api.repository.LivroRepository;
-import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -22,102 +20,50 @@ public class LivroService {
 
     private final LivroRepository livroRepository;
     private final AutorRepository autorRepository;
+    private final LivroMapper livroMapper;
 
     public LivroResponseDto salvarLivro(LivroSalvarDto dto){
         Autor autorEncontrado = autorRepository.findById(dto.getAutorId())
                 .orElseThrow(() -> new RuntimeException("Erro ao encontrar autor"));
 
-        Livro livro = new Livro();
-       // para pegara as informações do banco de dados
-        livro.setNome(dto.getNome());
-        livro.setIsbn(dto.getIsbn());
-        livro.setDataPublicacao(dto.getDataPublicacao());
-        livro.setAutor(autorEncontrado);
+           Livro livro = livroMapper.toEntity(dto);
+           livro.setAutor(autorEncontrado); // para ver o autor que tem esse livro
 
-        Livro livroSalvo = livroRepository.save(livro);
+           Livro livroSalvo = livroRepository.save(livro);
 
-        // transformar o autor que foi encontrado com id numa reposta para o cliente
-        AutorResponseDTO autorResponseDTO = AutorResponseDTO.builder()
-                .id(autorEncontrado.getId())
-                .nome(autorEncontrado.getNome())
-                .nacionalidade(autorEncontrado.getNacionalidade())
-                .build();
-
-       // transformar o livro salvo numa reposta para o cliente
-        LivroResponseDto livroResponseDto = LivroResponseDto.builder()
-                .id(livroSalvo.getId())
-                .nome(livroSalvo.getNome())
-                .isbn(livroSalvo.getIsbn())
-                .dataPublicacao(livroSalvo.getDataPublicacao())
-                .autor(autorResponseDTO)
-                .build();
-
-        return livroResponseDto;
-    }
-
-    public LivroResponseDto buscarLivroId(Long id){
-        return livroRepository.findById(id)
-                .map(livro -> LivroResponseDto.builder()
-                        .id(livro.getId())
-                        .nome(livro.getNome())
-                        .isbn(livro.getIsbn())
-                        .dataPublicacao(livro.getDataPublicacao())
-                        .autor(AutorResponseDTO.builder()
-                                .id(livro.getAutor().getId())
-                                .nome(livro.getAutor().getNome())
-                                .nacionalidade(livro.getAutor().getNacionalidade())
-                                .build())
-                        .build()
-                )
-                .orElseThrow(() -> new EntityNotFoundException("Erro ao buscar o livro"));
+           return livroMapper.toDto(livroSalvo);
     }
 
     public List<LivroResponseDto> listarLivro(){
-        return livroRepository.findAll().stream()
-                .map(listaLivro ->LivroResponseDto.builder()
-                        .id(listaLivro.getId())
-                        .nome(listaLivro.getNome())
-                        .isbn(listaLivro.getIsbn())
-                        .dataPublicacao(listaLivro.getDataPublicacao())
-                        .autor(AutorResponseDTO.builder()
-                                .id(listaLivro.getAutor().getId())
-                                .nome(listaLivro.getAutor().getNome())
-                                .nacionalidade(listaLivro.getAutor().getNacionalidade())
-                                .build())
-                        .build()
-                )
+        List<Livro> listarLivro = livroRepository.findAll();
+
+        List<LivroResponseDto> listarLivroResponseDto = listarLivro.stream()
+                .map(livroMapper::toDto)
                 .toList();
+
+        return listarLivroResponseDto;
     }
 
-    public LivroResponseDto atualizarLivro(Long id, LivroSalvarDto dto){
-        Livro livroExistente = livroRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Erro ao encontrar livro"));
+    public Optional<LivroResponseDto> buscarLivroId(Long id){
+        return livroRepository.findById(id)
+                .map(livroMapper::toDto);
+    }
 
+    public Optional<LivroResponseDto> atualizarLivro(Long id, LivroSalvarDto dto){
         Autor autorEncontrado = autorRepository.findById(dto.getAutorId())
                 .orElseThrow(() -> new RuntimeException("Erro ao encontrar autor"));
 
-        livroExistente.setNome(dto.getNome());
-        livroExistente.setIsbn(dto.getIsbn());
-        livroExistente.setDataPublicacao(dto.getDataPublicacao());
-        livroExistente.setAutor(autorEncontrado);
+        return livroRepository.findById(id)
+                .map(livro->{
+                    livro.setNome(dto.getNome());
+                    livro.setIsbn(dto.getIsbn());
+                    livro.setDataPublicacao(dto.getDataPublicacao());
+                    livro.setAutor(autorEncontrado);
 
-        Livro livroSalvo = livroRepository.save(livroExistente);
+                    Livro livroAtualizado = livroRepository.save(livro);
 
-        AutorResponseDTO autorResponseDTO = AutorResponseDTO.builder()
-                .id(autorEncontrado.getId())
-                .nome(autorEncontrado.getNome())
-                .nacionalidade(autorEncontrado.getNacionalidade())
-                .build();
-
-        LivroResponseDto livroResponseDto = LivroResponseDto.builder()
-                .id(livroSalvo.getId())
-                .nome(livroSalvo.getNome())
-                .isbn(livroSalvo.getIsbn())
-                .dataPublicacao(livroSalvo.getDataPublicacao())
-                .autor(autorResponseDTO)
-                .build();
-
-        return livroResponseDto;
+                    return livroMapper.toDto(livroAtualizado);
+                });
     }
 
     public void  deletarLivro(long id){

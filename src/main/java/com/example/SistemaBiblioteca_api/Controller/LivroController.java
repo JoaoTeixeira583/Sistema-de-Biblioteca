@@ -30,9 +30,11 @@ public class LivroController {
 
     @GetMapping("/{id}")
     public ResponseEntity<LivroResponseDto> buscarLivroId(@PathVariable Long id){
-        LivroResponseDto livroAchadoId = livroService.buscarLivroId(id);
+        Optional<LivroResponseDto> livroEncontrado = livroService.buscarLivroId(id);
 
-        return ResponseEntity.ok(livroAchadoId);
+        return livroEncontrado
+                .map(livro -> ResponseEntity.ok(livro))
+                .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @GetMapping
@@ -44,9 +46,11 @@ public class LivroController {
 
     @PutMapping("/{id}")
     public ResponseEntity<LivroResponseDto> atualizarLivro(@PathVariable Long id, @RequestBody LivroSalvarDto dto){
-        LivroResponseDto livroEncontrado = livroService.atualizarLivro(id, dto);
+        Optional<LivroResponseDto> livroEncontrado = livroService.atualizarLivro(id, dto);
 
-       return ResponseEntity.ok(livroEncontrado);
+         return livroEncontrado
+                .map(livro -> ResponseEntity.ok(livro))
+                .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @DeleteMapping("/{id}")
