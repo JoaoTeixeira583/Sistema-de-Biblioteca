@@ -10,6 +10,7 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
@@ -51,6 +52,17 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(erroRespostaDto);
     }
 
+    @ExceptionHandler(ResponseStatusException.class)
+    public ResponseEntity<ErroRespostaDto> erroConflict(ResponseStatusException ex){
 
+        ErroRespostaDto erroRespostaDto = ErroRespostaDto.builder()
+                // retorna o status HTTP associado à exceção, como 409 CONFLICT ou 404 NOT FOUND.
+                .status(ex.getStatusCode().value())
+                // retorna o motivo ou a mensagem que foi passada ao criar a ResponseStatusException. No seu caso, pode ser algo como “Não é possível excluir um autor que possui livros”.
+                .mensagem(ex.getReason())
+                .erros(List.of())
+                .build();
 
+        return ResponseEntity.status(ex.getStatusCode()).body(erroRespostaDto);
+    }
 }

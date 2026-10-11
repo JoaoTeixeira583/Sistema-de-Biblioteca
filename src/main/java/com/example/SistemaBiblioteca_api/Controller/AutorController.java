@@ -3,7 +3,6 @@ package com.example.SistemaBiblioteca_api.Controller;
 
 import com.example.SistemaBiblioteca_api.dto.AutorRequestDTO;
 import com.example.SistemaBiblioteca_api.dto.AutorResponseDTO;
-import com.example.SistemaBiblioteca_api.entity.Autor;
 import com.example.SistemaBiblioteca_api.service.AutorService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -12,7 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
+
 
 @RestController
 @RequestMapping("/autores")
@@ -37,21 +36,16 @@ public class AutorController {
 
     @GetMapping("/{id}")
     public ResponseEntity<AutorResponseDTO> buscarAutorId(@PathVariable Long id){
-        Optional<AutorResponseDTO> autorEncontrado = autorService.buscarAutorId(id);
+        AutorResponseDTO autorEncontrado = autorService.buscarAutorId(id);
 
-        return autorEncontrado
-                .map(autor -> ResponseEntity.ok(autor))
-                .orElseGet(() -> ResponseEntity.notFound().build());
+         return ResponseEntity.ok(autorEncontrado);
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<AutorResponseDTO> atualizarAutor(@PathVariable Long id,@Valid @RequestBody AutorRequestDTO autorRequestDTO){
-        Optional<AutorResponseDTO> autorAtualizado = autorService.atualizarAutor(id,autorRequestDTO);
+        AutorResponseDTO autorAtualizado = autorService.atualizarAutor(id,autorRequestDTO);
 
-        return autorAtualizado
-                .map(autorResponseDTO -> ResponseEntity.ok(autorResponseDTO))
-                .orElseGet(() -> ResponseEntity.notFound().build());
-
+        return ResponseEntity.ok(autorAtualizado);
     }
 
     @DeleteMapping("/{id}")

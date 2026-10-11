@@ -8,6 +8,7 @@ import com.example.SistemaBiblioteca_api.entity.Livro;
 import com.example.SistemaBiblioteca_api.mapper.LivroMapper;
 import com.example.SistemaBiblioteca_api.repository.AutorRepository;
 import com.example.SistemaBiblioteca_api.repository.LivroRepository;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -24,7 +25,7 @@ public class LivroService {
 
     public LivroResponseDto salvarLivro(LivroSalvarDto dto){
         Autor autorEncontrado = autorRepository.findById(dto.getAutorId())
-                .orElseThrow(() -> new RuntimeException("Erro ao encontrar autor"));
+                .orElseThrow(() -> new EntityNotFoundException("Erro ao encontrar autor"));
 
            Livro livro = livroMapper.toEntity(dto);
            livro.setAutor(autorEncontrado); // para ver o autor que tem esse livro
@@ -44,14 +45,15 @@ public class LivroService {
         return listarLivroResponseDto;
     }
 
-    public Optional<LivroResponseDto> buscarLivroId(Long id){
+    public LivroResponseDto buscarLivroId(Long id){
         return livroRepository.findById(id)
-                .map(livroMapper::toDto);
+                .map(livroMapper::toDto)
+                .orElseThrow(() -> new EntityNotFoundException("Informe um id de um livro que exista"));
     }
 
-    public Optional<LivroResponseDto> atualizarLivro(Long id, LivroSalvarDto dto){
+    public LivroResponseDto atualizarLivro(Long id, LivroSalvarDto dto){
         Autor autorEncontrado = autorRepository.findById(dto.getAutorId())
-                .orElseThrow(() -> new RuntimeException("Erro ao encontrar autor"));
+                .orElseThrow(() -> new EntityNotFoundException("Erro ao encontrar autor"));
 
         return livroRepository.findById(id)
                 .map(livro->{
@@ -63,14 +65,15 @@ public class LivroService {
                     Livro livroAtualizado = livroRepository.save(livro);
 
                     return livroMapper.toDto(livroAtualizado);
-                });
+                })
+                .orElseThrow(()-> new EntityNotFoundException("Livro não encontrado"));
     }
 
     public void  deletarLivro(long id){
          if(livroRepository.existsById(id)){
              livroRepository.deleteById(id);
          } else {
-             throw new RuntimeException("Informe um id de um livro que exista");
+             throw new EntityNotFoundException("Informe um id de um livro que exista");
          }
     }
 

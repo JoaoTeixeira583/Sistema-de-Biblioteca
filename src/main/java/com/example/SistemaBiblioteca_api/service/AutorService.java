@@ -6,12 +6,16 @@ import com.example.SistemaBiblioteca_api.dto.AutorResponseDTO;
 import com.example.SistemaBiblioteca_api.entity.Autor;
 import com.example.SistemaBiblioteca_api.mapper.AutorMapper;
 import com.example.SistemaBiblioteca_api.repository.AutorRepository;
+import com.example.SistemaBiblioteca_api.repository.LivroRepository;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
-import java.util.Optional;
+
 
 @Service
 @RequiredArgsConstructor // para fazer o construtor na injeção
@@ -19,6 +23,7 @@ public class AutorService {
 
     private final AutorRepository autorRepository;
     private final AutorMapper autorMapper;
+    private final LivroRepository livroRepository;
 
     @Transactional
     public AutorResponseDTO salvarAutor(AutorRequestDTO autorRequestDTO){
@@ -41,14 +46,14 @@ public class AutorService {
 
     // no Optional ja tem uma mensagem de erro
     @Transactional(readOnly = true)
-    public Optional<AutorResponseDTO> buscarAutorId(Long id){
-        // o optional tem o metodo map para fazer a transfromação
+    public AutorResponseDTO buscarAutorId(Long id){
         return autorRepository.findById(id)
-                .map(autorMapper::toDto);
+                .map(autorMapper::toDto)
+                .orElseThrow(() -> new EntityNotFoundException("Erro ao encontrar autor"));
     }
 
     @Transactional
-    public Optional<AutorResponseDTO> atualizarAutor(Long id,AutorRequestDTO autorRequestDTO) {
+    public AutorResponseDTO atualizarAutor(Long id,AutorRequestDTO autorRequestDTO) {
         return autorRepository.findById(id)
                 .map(autor -> {
                     autor.setNome(autorRequestDTO.getNome());
@@ -57,15 +62,18 @@ public class AutorService {
                     Autor autorAtualizado = autorRepository.save(autor);
 
                     return autorMapper.toDto(autorAtualizado);
-                });
+                })
+                .orElseThrow(() -> new EntityNotFoundException("Autor não encontrado"));
     }
 
     @Transactional
     public void deletarAutor(Long id){
-       if(autorRepository.existsById(id)){
-           autorRepository.deleteById(id);
-       } else {
-           throw new RuntimeException("Informe um id de um autor que exista");
-       }
+        if(!autorRepository.existsById(id)){
+            throw new EntityNotFoundException("Erro ao encontrar o autor");
+        } else if (livroRepository.existsByAutorId(id)) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT,"Não é possível excluir um autor que possui livros");
+        } else {
+            autorRepository.deleteById(id);
+        }
     }
 }
