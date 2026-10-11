@@ -12,6 +12,7 @@ import lombok.*;
 @AllArgsConstructor
 @Builder
 public class AutorRequestDTO {
+
     @NotBlank
     private String nome;
 

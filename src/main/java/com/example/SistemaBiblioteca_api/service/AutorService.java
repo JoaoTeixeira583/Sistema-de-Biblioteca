@@ -45,7 +45,11 @@ public class AutorService {
     }
 
     public void deletarAutor(Long id){
-       autorRepository.deleteById(id);
+       if(autorRepository.existsById(id)){
+           autorRepository.deleteById(id);
+       } else {
+           throw new RuntimeException("Informe um id de um autor que exista");
+       }
     }
 
     public Optional<AutorResponseDTO> atualizarAutor(Long id,AutorRequestDTO autorRequestDTO) {

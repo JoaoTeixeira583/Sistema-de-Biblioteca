@@ -3,6 +3,8 @@ package com.example.SistemaBiblioteca_api.exception;
 
 import com.example.SistemaBiblioteca_api.dto.ErroCampoDto;
 import com.example.SistemaBiblioteca_api.dto.ErroRespostaDto;
+import jakarta.persistence.EntityNotFoundException;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -33,5 +35,22 @@ public class GlobalExceptionHandler {
 
         return ResponseEntity.badRequest().body(RepostaErroRespostaDto);
     }
+
+    // quando o spring lançar oq tem dentro dessa aspas ele lança esse metodo abaixo dele
+    @ExceptionHandler({EntityNotFoundException.class, RuntimeException.class})
+    public ResponseEntity<ErroRespostaDto> erroNaoEcontrado(RuntimeException ex){
+
+        ErroRespostaDto erroRespostaDto = ErroRespostaDto.builder()
+                .status(404)
+                // pega a mensagem da validação do service e tranforma em json
+                .mensagem(ex.getMessage())
+                // para uma lista vazia
+                .erros(List.of())
+                .build();
+
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(erroRespostaDto);
+    }
+
+
 
 }
