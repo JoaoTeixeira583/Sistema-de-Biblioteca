@@ -4,15 +4,15 @@ package com.example.SistemaBiblioteca_api.Controller;
 import com.example.SistemaBiblioteca_api.dto.LivroResponseDto;
 import com.example.SistemaBiblioteca_api.dto.LivroSalvarDto;
 import com.example.SistemaBiblioteca_api.service.LivroService;
-import jakarta.servlet.ServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
-import java.util.Optional;
+import org.springframework.data.domain.Pageable;
 
 @RestController
 @RequestMapping("/livros")
@@ -35,11 +35,26 @@ public class LivroController {
         return ResponseEntity.ok(livroEncontrado);
     }
 
-    @GetMapping
-    public ResponseEntity<List<LivroResponseDto>> listarLivro(){
-        List<LivroResponseDto> listaLivro = livroService.listarLivro();
+    @GetMapping()
+    public ResponseEntity<Page<LivroResponseDto>> listarLivro(
+            //  para deixar a paginação em default de um jeito casdo o cliente não escolha nada
+            @PageableDefault(size = 10,sort = "nome",direction = Sort.Direction.ASC)
+            Pageable pageable){
 
-        return ResponseEntity.ok(listaLivro);
+         Page<LivroResponseDto> paginaLivro = livroService.listarLivro(pageable);
+
+         return ResponseEntity.ok(paginaLivro);
+    }
+
+    @GetMapping("/busca")
+    public ResponseEntity<Page<LivroResponseDto>> buscarLivroNome(
+            @RequestParam String nome,
+            @PageableDefault(size = 10,sort = "nome",direction = Sort.Direction.ASC) Pageable pageable,
+            @RequestParam(required = false)  Long autorId
+    ){
+        Page<LivroResponseDto> paginaLivroBusca = livroService.buscarLivroNome(nome,pageable,autorId);
+
+        return ResponseEntity.ok(paginaLivroBusca);
     }
 
     @PutMapping("/{id}")
@@ -55,8 +70,4 @@ public class LivroController {
 
         return ResponseEntity.noContent().build();
     }
-
-
-
-
 }

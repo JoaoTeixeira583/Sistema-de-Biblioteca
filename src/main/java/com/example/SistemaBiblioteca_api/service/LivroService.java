@@ -10,10 +10,12 @@ import com.example.SistemaBiblioteca_api.repository.AutorRepository;
 import com.example.SistemaBiblioteca_api.repository.LivroRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
+
 
 @Service
 @RequiredArgsConstructor
@@ -35,14 +37,35 @@ public class LivroService {
            return livroMapper.toDto(livroSalvo);
     }
 
-    public List<LivroResponseDto> listarLivro(){
-        List<Livro> listarLivro = livroRepository.findAll();
+    // page significa para lidar com grandes dados
+    public Page<LivroResponseDto> listarLivro(Pageable pageable){
+        Page<Livro> paginaLivro = livroRepository.findAll(pageable);
 
-        List<LivroResponseDto> listarLivroResponseDto = listarLivro.stream()
-                .map(livroMapper::toDto)
-                .toList();
+        Page<LivroResponseDto> paginasLivros = paginaLivro
+                .map(livroMapper::toDto);
 
-        return listarLivroResponseDto;
+        return paginasLivros;
+    }
+
+    // metodo para buscar por nome do livro
+    public Page<LivroResponseDto> buscarLivroNome(String nome,Pageable pageable,Long autorId){
+        if(autorId==null){
+            Page<Livro> buscarLivro = livroRepository.findByNomeContainingIgnoreCase(nome,pageable);
+
+            Page<LivroResponseDto> paginaBuscaLivro = buscarLivro
+                    .map(livroMapper::toDto);
+
+            return paginaBuscaLivro;
+        }else if(autorRepository.existsById(autorId)){
+            Page<Livro> buscaLivroAutor = livroRepository.findByNomeContainingIgnoreCaseAndAutorId(nome, autorId, pageable);
+
+            Page<LivroResponseDto> paginaBuscaLivroAutor = buscaLivroAutor
+                    .map(livroMapper::toDto);
+
+            return paginaBuscaLivroAutor;
+        } else {
+            throw new EntityNotFoundException("Erro ao achar o id do autor");
+        }
     }
 
     public LivroResponseDto buscarLivroId(Long id){

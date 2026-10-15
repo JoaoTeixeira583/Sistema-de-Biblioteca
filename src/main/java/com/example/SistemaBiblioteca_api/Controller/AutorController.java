@@ -6,11 +6,14 @@ import com.example.SistemaBiblioteca_api.dto.AutorResponseDTO;
 import com.example.SistemaBiblioteca_api.service.AutorService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.data.domain.Pageable;
 
-import java.util.List;
 
 
 @RestController
@@ -27,11 +30,25 @@ public class AutorController {
         return ResponseEntity.status(HttpStatus.CREATED).body(autorCriado);
     }
 
-    @GetMapping
-    public ResponseEntity<List<AutorResponseDTO>> listarAutor(){
-        List<AutorResponseDTO> listaAutores = autorService.listarAutor();
+    @GetMapping()
+    public ResponseEntity<Page<AutorResponseDTO>> listarAuto(
+            @PageableDefault(size = 10,sort = "nome",direction = Sort.Direction.ASC)
+            Pageable pageable){
 
-        return ResponseEntity.ok(listaAutores);
+        Page<AutorResponseDTO> paginaAutor = autorService.listarAutor(pageable);
+
+        return ResponseEntity.ok(paginaAutor);
+    }
+
+    @GetMapping("/busca")
+    public ResponseEntity<Page<AutorResponseDTO>> buscarAutorNome(
+            @RequestParam String nome,
+            @PageableDefault(size = 10,sort = "nome",direction = Sort.Direction.ASC)
+            Pageable pageable
+    ){
+        Page<AutorResponseDTO> paginaAutorEncontrado = autorService.buscarAutorNome(nome, pageable);
+
+        return ResponseEntity.ok(paginaAutorEncontrado);
     }
 
     @GetMapping("/{id}")

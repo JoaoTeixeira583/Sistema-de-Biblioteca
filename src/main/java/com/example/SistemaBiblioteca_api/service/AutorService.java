@@ -9,6 +9,8 @@ import com.example.SistemaBiblioteca_api.repository.AutorRepository;
 import com.example.SistemaBiblioteca_api.repository.LivroRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,14 +36,22 @@ public class AutorService {
     }
 
     @Transactional(readOnly = true)
-    public List<AutorResponseDTO> listarAutor(){
-        List<Autor> listarAutor = autorRepository.findAll();
+    public Page<AutorResponseDTO> listarAutor(Pageable pageable){
+        Page<Autor> listarAutor = autorRepository.findAll(pageable);
 
-        List<AutorResponseDTO> autorResponseDTOList = listarAutor.stream()
-                .map(autorMapper::toDto)
-                .toList();
+        Page<AutorResponseDTO> paginaAutores = listarAutor
+                .map(autorMapper::toDto);
 
-        return autorResponseDTOList;
+        return paginaAutores;
+    }
+
+    public Page<AutorResponseDTO> buscarAutorNome(String nome,Pageable pageable){
+        Page<Autor> paginaAutor = autorRepository.findByNomeContainingIgnoreCase(nome, pageable);
+
+        Page<AutorResponseDTO> paginaAutorEncontrado = paginaAutor
+                .map(autorMapper::toDto);
+
+        return paginaAutorEncontrado;
     }
 
     // no Optional ja tem uma mensagem de erro
