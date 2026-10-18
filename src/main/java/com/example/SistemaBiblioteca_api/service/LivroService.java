@@ -2,7 +2,7 @@ package com.example.SistemaBiblioteca_api.service;
 
 
 import com.example.SistemaBiblioteca_api.dto.LivroResponseDto;
-import com.example.SistemaBiblioteca_api.dto.LivroSalvarDto;
+import com.example.SistemaBiblioteca_api.dto.LivroRequestDto;
 import com.example.SistemaBiblioteca_api.entity.Autor;
 import com.example.SistemaBiblioteca_api.entity.Livro;
 import com.example.SistemaBiblioteca_api.mapper.LivroMapper;
@@ -14,8 +14,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-
 
 @Service
 @RequiredArgsConstructor
@@ -25,7 +23,7 @@ public class LivroService {
     private final AutorRepository autorRepository;
     private final LivroMapper livroMapper;
 
-    public LivroResponseDto salvarLivro(LivroSalvarDto dto){
+    public LivroResponseDto salvarLivro(LivroRequestDto dto){
         Autor autorEncontrado = autorRepository.findById(dto.getAutorId())
                 .orElseThrow(() -> new EntityNotFoundException("Erro ao encontrar autor"));
 
@@ -74,7 +72,7 @@ public class LivroService {
                 .orElseThrow(() -> new EntityNotFoundException("Informe um id de um livro que exista"));
     }
 
-    public LivroResponseDto atualizarLivro(Long id, LivroSalvarDto dto){
+    public LivroResponseDto atualizarLivro(Long id, LivroRequestDto dto){
         Autor autorEncontrado = autorRepository.findById(dto.getAutorId())
                 .orElseThrow(() -> new EntityNotFoundException("Erro ao encontrar autor"));
 

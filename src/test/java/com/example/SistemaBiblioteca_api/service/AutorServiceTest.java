@@ -1,8 +1,8 @@
 package com.example.SistemaBiblioteca_api.service;
 
 
-import com.example.SistemaBiblioteca_api.dto.AutorRequestDTO;
-import com.example.SistemaBiblioteca_api.dto.AutorResponseDTO;
+import com.example.SistemaBiblioteca_api.dto.AutorRequestDto;
+import com.example.SistemaBiblioteca_api.dto.AutorResponseDto;
 import com.example.SistemaBiblioteca_api.entity.Autor;
 import com.example.SistemaBiblioteca_api.mapper.AutorMapper;
 import com.example.SistemaBiblioteca_api.repository.AutorRepository;
@@ -18,7 +18,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.server.ResponseStatusException;
-import org.w3c.dom.ls.LSInput;
+
 
 import java.util.List;
 import java.util.Optional;
@@ -59,7 +59,7 @@ public class AutorServiceTest {
         autor.setNome("Clarice Lispector");
         autor.setNacionalidade("Ucrania-Brasileira");
 
-        AutorResponseDTO autorDTO = AutorResponseDTO.builder()
+        AutorResponseDto autorDTO = AutorResponseDto.builder()
                 .id(3L)
                 .nome("Clarice Lispector")
                 .nacionalidade("Ucrania-Brasileira")
@@ -76,7 +76,7 @@ public class AutorServiceTest {
         when(autorMapper.toDto(autor)).thenReturn(autorDTO);
 
         // para verificar o metodo
-        Page<AutorResponseDTO> paginaAutorNomeTeste = autorService.buscarAutorNome(nome,pageable);
+        Page<AutorResponseDto> paginaAutorNomeTeste = autorService.buscarAutorNome(nome,pageable);
 
         assertEquals(1, paginaAutorNomeTeste.getNumberOfElements());
         assertEquals(
@@ -97,7 +97,7 @@ public class AutorServiceTest {
         when(autorRepository.findByNomeContainingIgnoreCase(nome,pageable))
                 .thenReturn(paginaAutores);
 
-        Page<AutorResponseDTO> paginaAutor = autorService.buscarAutorNome(nome,pageable);
+        Page<AutorResponseDto> paginaAutor = autorService.buscarAutorNome(nome,pageable);
 
         // para ver se o resultado estiver vazio
         assertTrue(paginaAutor.isEmpty());
@@ -126,7 +126,7 @@ public class AutorServiceTest {
         autor.setNome("Joaquim Maria Machado de Assis");
         autor.setNacionalidade("Brasileira");
 
-        AutorResponseDTO autorResponseDTO = AutorResponseDTO.builder()
+        AutorResponseDto autorResponseDTO = AutorResponseDto.builder()
                 .id(2L)
                 .nome("Joaquim Maria Machado de Assis")
                 .nacionalidade("Brasileira")
@@ -137,7 +137,7 @@ public class AutorServiceTest {
 
         when(autorMapper.toDto(autor)).thenReturn(autorResponseDTO);
 
-        AutorResponseDTO autorId = autorService.buscarAutorId(id);
+        AutorResponseDto autorId = autorService.buscarAutorId(id);
 
         assertEquals(2L,autorId.getId());
         assertEquals(
@@ -151,7 +151,7 @@ public class AutorServiceTest {
     public void atualizarAutor_quandoAutorNaoExiste_lancaEntityNotFoundException(){
         Long id = 99L;
 
-        AutorRequestDTO autorRequestDTO = AutorRequestDTO.builder()
+        AutorRequestDto autorRequestDTO = AutorRequestDto.builder()
                 .nome("Pedro")
                 .nacionalidade("Africano")
                 .build();
@@ -177,12 +177,12 @@ public class AutorServiceTest {
         autor.setNacionalidade("Ucraniana-Brasileira");
         autor.setLivros(List.of());
 
-        AutorRequestDTO autorRequestDTO = AutorRequestDTO.builder()
+        AutorRequestDto autorRequestDTO = AutorRequestDto.builder()
                 .nome("Henrique Caio")
                 .nacionalidade("Argentino")
                 .build();
 
-        AutorResponseDTO autorResponseDTO = AutorResponseDTO.builder()
+        AutorResponseDto autorResponseDTO = AutorResponseDto.builder()
                 .id(3L)
                 .nome("Henrique Caio")
                 .nacionalidade("Argentino")
@@ -196,7 +196,7 @@ public class AutorServiceTest {
 
         when(autorMapper.toDto(autor)).thenReturn(autorResponseDTO);
 
-        AutorResponseDTO autorId = autorService.atualizarAutor(id,autorRequestDTO);
+        AutorResponseDto autorId = autorService.atualizarAutor(id,autorRequestDTO);
 
         // essa parte e para verificar se tudo esta cero como esperado
         assertEquals(3L,autorId.getId());
@@ -275,7 +275,7 @@ public class AutorServiceTest {
     @Test
     public void salvarAutor_quandoDadosValidos_retornaDtoDoAutorSalvo(){
 
-        AutorRequestDTO autorRequestDTO = new AutorRequestDTO();
+        AutorRequestDto autorRequestDTO = new AutorRequestDto();
 
         autorRequestDTO.setNome("João Pedro");
         autorRequestDTO.setNacionalidade("Brasileiro");
@@ -287,7 +287,7 @@ public class AutorServiceTest {
         autor.setNacionalidade("Brasileiro");
         autor.setLivros(List.of());
 
-        AutorResponseDTO autorResponseDTO = new AutorResponseDTO();
+        AutorResponseDto autorResponseDTO = new AutorResponseDto();
 
         autorResponseDTO.setId(5L);
         autorResponseDTO.setNome("João Pedro");
@@ -303,7 +303,7 @@ public class AutorServiceTest {
         when(autorMapper.toDto(autor))
                 .thenReturn(autorResponseDTO);
 
-        AutorResponseDTO salvarAutor = autorService.salvarAutor(autorRequestDTO);
+        AutorResponseDto salvarAutor = autorService.salvarAutor(autorRequestDTO);
 
         assertEquals(
                 5L,
@@ -332,7 +332,7 @@ public class AutorServiceTest {
         autor.setNacionalidade("Ucraniano");
         autor.setLivros(List.of());
 
-        AutorResponseDTO autorResponseDTO = new AutorResponseDTO();
+        AutorResponseDto autorResponseDTO = new AutorResponseDto();
 
         autorResponseDTO.setId(7L);
         autorResponseDTO.setNome("Pedro");
@@ -346,7 +346,7 @@ public class AutorServiceTest {
         autor1.setNacionalidade("Argentino");
         autor1.setLivros(List.of());
 
-        AutorResponseDTO autorResponseDTO1 = new AutorResponseDTO();
+        AutorResponseDto autorResponseDTO1 = new AutorResponseDto();
 
         autorResponseDTO1.setId(8L);
         autorResponseDTO1.setNome("Henrique");

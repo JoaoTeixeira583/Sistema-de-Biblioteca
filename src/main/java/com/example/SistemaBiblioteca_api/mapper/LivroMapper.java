@@ -2,7 +2,7 @@ package com.example.SistemaBiblioteca_api.mapper;
 
 import com.example.SistemaBiblioteca_api.dto.AutorResumoDto;
 import com.example.SistemaBiblioteca_api.dto.LivroResponseDto;
-import com.example.SistemaBiblioteca_api.dto.LivroSalvarDto;
+import com.example.SistemaBiblioteca_api.dto.LivroRequestDto;
 import com.example.SistemaBiblioteca_api.entity.Livro;
 import org.springframework.stereotype.Component;
 
@@ -33,14 +33,14 @@ public class LivroMapper {
         return livroResponseDto;
     }
 
-    public Livro toEntity(LivroSalvarDto livroSalvarDto){
+    public Livro toEntity(LivroRequestDto livroRequestDto){
 
         Livro livro = new Livro();
 
 
-        livro.setNome(livroSalvarDto.getNome());
-        livro.setIsbn(livroSalvarDto.getIsbn());
-        livro.setDataPublicacao(livroSalvarDto.getDataPublicacao());
+        livro.setNome(livroRequestDto.getNome());
+        livro.setIsbn(livroRequestDto.getIsbn());
+        livro.setDataPublicacao(livroRequestDto.getDataPublicacao());
 
 
         return livro;

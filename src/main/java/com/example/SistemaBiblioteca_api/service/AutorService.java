@@ -1,8 +1,8 @@
 package com.example.SistemaBiblioteca_api.service;
 
 
-import com.example.SistemaBiblioteca_api.dto.AutorRequestDTO;
-import com.example.SistemaBiblioteca_api.dto.AutorResponseDTO;
+import com.example.SistemaBiblioteca_api.dto.AutorRequestDto;
+import com.example.SistemaBiblioteca_api.dto.AutorResponseDto;
 import com.example.SistemaBiblioteca_api.entity.Autor;
 import com.example.SistemaBiblioteca_api.mapper.AutorMapper;
 import com.example.SistemaBiblioteca_api.repository.AutorRepository;
@@ -16,8 +16,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.List;
-
 
 @Service
 @RequiredArgsConstructor // para fazer o construtor na injeção
@@ -28,7 +26,7 @@ public class AutorService {
     private final LivroRepository livroRepository;
 
     @Transactional
-    public AutorResponseDTO salvarAutor(AutorRequestDTO autorRequestDTO){
+    public AutorResponseDto salvarAutor(AutorRequestDto autorRequestDTO){
         Autor autor = autorMapper.toEntity(autorRequestDTO);
         Autor autorSalvo = autorRepository.save(autor);
 
@@ -36,19 +34,19 @@ public class AutorService {
     }
 
     @Transactional(readOnly = true)
-    public Page<AutorResponseDTO> listarAutor(Pageable pageable){
+    public Page<AutorResponseDto> listarAutor(Pageable pageable){
         Page<Autor> listarAutor = autorRepository.findAll(pageable);
 
-        Page<AutorResponseDTO> paginaAutores = listarAutor
+        Page<AutorResponseDto> paginaAutores = listarAutor
                 .map(autorMapper::toDto);
 
         return paginaAutores;
     }
 
-    public Page<AutorResponseDTO> buscarAutorNome(String nome,Pageable pageable){
+    public Page<AutorResponseDto> buscarAutorNome(String nome, Pageable pageable){
         Page<Autor> paginaAutor = autorRepository.findByNomeContainingIgnoreCase(nome, pageable);
 
-        Page<AutorResponseDTO> paginaAutorEncontrado = paginaAutor
+        Page<AutorResponseDto> paginaAutorEncontrado = paginaAutor
                 .map(autorMapper::toDto);
 
         return paginaAutorEncontrado;
@@ -56,14 +54,14 @@ public class AutorService {
 
     // no Optional ja tem uma mensagem de erro
     @Transactional(readOnly = true)
-    public AutorResponseDTO buscarAutorId(Long id){
+    public AutorResponseDto buscarAutorId(Long id){
         return autorRepository.findById(id)
                 .map(autorMapper::toDto)
                 .orElseThrow(() -> new EntityNotFoundException("Erro ao encontrar autor"));
     }
 
     @Transactional
-    public AutorResponseDTO atualizarAutor(Long id,AutorRequestDTO autorRequestDTO) {
+    public AutorResponseDto atualizarAutor(Long id, AutorRequestDto autorRequestDTO) {
         return autorRepository.findById(id)
                 .map(autor -> {
                     autor.setNome(autorRequestDTO.getNome());

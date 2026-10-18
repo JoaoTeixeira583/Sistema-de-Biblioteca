@@ -2,7 +2,7 @@ package com.example.SistemaBiblioteca_api.Controller;
 
 
 import com.example.SistemaBiblioteca_api.dto.LivroResponseDto;
-import com.example.SistemaBiblioteca_api.dto.LivroSalvarDto;
+import com.example.SistemaBiblioteca_api.dto.LivroRequestDto;
 import com.example.SistemaBiblioteca_api.service.LivroService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -22,8 +22,8 @@ public class LivroController {
     private final LivroService livroService;
 
     @PostMapping
-    public ResponseEntity<LivroResponseDto> salvarLivro(@Valid @RequestBody LivroSalvarDto livroSalvarDto){
-        LivroResponseDto livroResponseDto = livroService.salvarLivro(livroSalvarDto);
+    public ResponseEntity<LivroResponseDto> salvarLivro(@Valid @RequestBody LivroRequestDto livroRequestDto){
+        LivroResponseDto livroResponseDto = livroService.salvarLivro(livroRequestDto);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(livroResponseDto);
     }
@@ -58,7 +58,7 @@ public class LivroController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<LivroResponseDto> atualizarLivro(@PathVariable Long id, @RequestBody LivroSalvarDto dto){
+    public ResponseEntity<LivroResponseDto> atualizarLivro(@PathVariable Long id, @RequestBody LivroRequestDto dto){
         LivroResponseDto livroEncontrado = livroService.atualizarLivro(id, dto);
 
          return ResponseEntity.ok(livroEncontrado);

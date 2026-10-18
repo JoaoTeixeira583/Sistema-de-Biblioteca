@@ -1,8 +1,8 @@
 package com.example.SistemaBiblioteca_api.Controller;
 
 
-import com.example.SistemaBiblioteca_api.dto.AutorRequestDTO;
-import com.example.SistemaBiblioteca_api.dto.AutorResponseDTO;
+import com.example.SistemaBiblioteca_api.dto.AutorRequestDto;
+import com.example.SistemaBiblioteca_api.dto.AutorResponseDto;
 import com.example.SistemaBiblioteca_api.service.AutorService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -24,43 +24,43 @@ public class AutorController {
     private final AutorService autorService;
 
     @PostMapping
-    public ResponseEntity<AutorResponseDTO> salvarAutor(@Valid  @RequestBody AutorRequestDTO autorRequestDTO){
-        AutorResponseDTO autorCriado = autorService.salvarAutor(autorRequestDTO);
+    public ResponseEntity<AutorResponseDto> salvarAutor(@Valid  @RequestBody AutorRequestDto autorRequestDTO){
+        AutorResponseDto autorCriado = autorService.salvarAutor(autorRequestDTO);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(autorCriado);
     }
 
     @GetMapping()
-    public ResponseEntity<Page<AutorResponseDTO>> listarAuto(
+    public ResponseEntity<Page<AutorResponseDto>> listarAuto(
             @PageableDefault(size = 10,sort = "nome",direction = Sort.Direction.ASC)
             Pageable pageable){
 
-        Page<AutorResponseDTO> paginaAutor = autorService.listarAutor(pageable);
+        Page<AutorResponseDto> paginaAutor = autorService.listarAutor(pageable);
 
         return ResponseEntity.ok(paginaAutor);
     }
 
     @GetMapping("/busca")
-    public ResponseEntity<Page<AutorResponseDTO>> buscarAutorNome(
+    public ResponseEntity<Page<AutorResponseDto>> buscarAutorNome(
             @RequestParam String nome,
             @PageableDefault(size = 10,sort = "nome",direction = Sort.Direction.ASC)
             Pageable pageable
     ){
-        Page<AutorResponseDTO> paginaAutorEncontrado = autorService.buscarAutorNome(nome, pageable);
+        Page<AutorResponseDto> paginaAutorEncontrado = autorService.buscarAutorNome(nome, pageable);
 
         return ResponseEntity.ok(paginaAutorEncontrado);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<AutorResponseDTO> buscarAutorId(@PathVariable Long id){
-        AutorResponseDTO autorEncontrado = autorService.buscarAutorId(id);
+    public ResponseEntity<AutorResponseDto> buscarAutorId(@PathVariable Long id){
+        AutorResponseDto autorEncontrado = autorService.buscarAutorId(id);
 
          return ResponseEntity.ok(autorEncontrado);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<AutorResponseDTO> atualizarAutor(@PathVariable Long id,@Valid @RequestBody AutorRequestDTO autorRequestDTO){
-        AutorResponseDTO autorAtualizado = autorService.atualizarAutor(id,autorRequestDTO);
+    public ResponseEntity<AutorResponseDto> atualizarAutor(@PathVariable Long id, @Valid @RequestBody AutorRequestDto autorRequestDTO){
+        AutorResponseDto autorAtualizado = autorService.atualizarAutor(id,autorRequestDTO);
 
         return ResponseEntity.ok(autorAtualizado);
     }

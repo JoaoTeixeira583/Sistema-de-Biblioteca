@@ -15,7 +15,7 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class LivroSalvarDto {
+public class LivroRequestDto {
     @NotBlank
     private String nome;
 

@@ -2,21 +2,21 @@ package com.example.SistemaBiblioteca_api.dto;
 
 
 
+import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 
-import java.util.List;
-
-// representa o que a api vai devolver para o cliente
+// representa quais informações que vai entrar na api
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class AutorResponseDTO {
+public class AutorRequestDto {
 
-    private Long id;
+    @NotBlank
     private String nome;
+
+    @NotBlank
     private String nacionalidade;
-    private List<LivroResumoDto> livros;
 
 }

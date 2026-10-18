@@ -1,7 +1,7 @@
 package com.example.SistemaBiblioteca_api.mapper;
 
-import com.example.SistemaBiblioteca_api.dto.AutorRequestDTO;
-import com.example.SistemaBiblioteca_api.dto.AutorResponseDTO;
+import com.example.SistemaBiblioteca_api.dto.AutorRequestDto;
+import com.example.SistemaBiblioteca_api.dto.AutorResponseDto;
 import com.example.SistemaBiblioteca_api.dto.LivroResumoDto;
 import com.example.SistemaBiblioteca_api.entity.Autor;
 import org.springframework.stereotype.Component;
@@ -13,7 +13,7 @@ import java.util.List;
 public class AutorMapper {
 
     // transformar dto em entity
-    public Autor toEntity(AutorRequestDTO autorRequestDTO) {
+    public Autor toEntity(AutorRequestDto autorRequestDTO) {
 
         Autor autor = new Autor();
 
@@ -25,9 +25,9 @@ public class AutorMapper {
     }
 
     // transformar enitty em dto
-    public AutorResponseDTO toDto(Autor autor){
+    public AutorResponseDto toDto(Autor autor){
 
-        AutorResponseDTO autorResponseDTO = new AutorResponseDTO();
+        AutorResponseDto autorResponseDTO = new AutorResponseDto();
 
         autorResponseDTO.setId(autor.getId());
         autorResponseDTO.setNome(autor.getNome());
