@@ -1,6 +1,8 @@
 package com.example.SistemaBiblioteca_api.Controller;
 
+import com.example.SistemaBiblioteca_api.dto.AuthResponseDto;
 import com.example.SistemaBiblioteca_api.dto.UsuarioCadastroDto;
+import com.example.SistemaBiblioteca_api.dto.UsuarioLoginDto;
 import com.example.SistemaBiblioteca_api.dto.UsuarioResponseDto;
 import com.example.SistemaBiblioteca_api.service.UsuarioService;
 import jakarta.validation.Valid;
@@ -26,6 +28,13 @@ public class AuthController {
         UsuarioResponseDto usuarioCadastrado = usuarioService.cadastrarUsuario(dto);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(usuarioCadastrado);
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<AuthResponseDto> loginUsuario(@RequestBody @Valid UsuarioLoginDto dto){
+        AuthResponseDto login = usuarioService.login(dto);
+
+        return ResponseEntity.ok(login);
     }
 }
 

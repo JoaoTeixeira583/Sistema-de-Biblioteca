@@ -2,6 +2,8 @@ package com.example.SistemaBiblioteca_api.security;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -29,5 +31,11 @@ public class SecurityConfig {
                 );
         // finaliza essa configuração e cria o SecurityFilterChain
         return httpSecurity.build();
+    }
+
+    // metodo para verificar o e-mail e a senha enviados nessa rota
+    @Bean
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception{
+        return configuration.getAuthenticationManager();
     }
 }
