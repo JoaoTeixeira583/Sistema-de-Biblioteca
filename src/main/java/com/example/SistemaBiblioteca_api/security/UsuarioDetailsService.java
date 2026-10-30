@@ -1,4 +1,4 @@
-package com.example.SistemaBiblioteca_api.service;
+package com.example.SistemaBiblioteca_api.security;
 
 import com.example.SistemaBiblioteca_api.entity.Usuario;
 import com.example.SistemaBiblioteca_api.repository.UsuarioRepository;

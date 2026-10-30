@@ -34,6 +34,7 @@ public class JwtService {
         Instant expiracao = agora.plusSeconds(15 * 60);
 
         // iniciar montagem de tokem
+        // Jwts.builder() monta e gera um JWT
         return Jwts.builder()
                 //   definir o e-mail como subject
                 .setSubject(userDetails.getUsername())
@@ -45,5 +46,22 @@ public class JwtService {
                 .signWith(obterChaveAssinatura(), SignatureAlgorithm.HS256)
                 // converter para o formato compacto
                 .compact();
+    }
+
+    // usar o token na api
+    public String extrairEmailDoToken(String token){
+       // Jwts.parser lê e valida um Jwt que já existe
+        return Jwts.parser()
+                // informar qual chave deve ser usada para conferir a assinatura
+                .verifyWith(obterChaveAssinatura())
+                // finaliza a configuração e cria um parser para fazer o uso
+                .build()
+                // o token e passado pelo .parseSignedClaims(token)
+                .parseSignedClaims(token)
+                // ver o conteudo do token
+                .getPayload()
+                // pega o valor do campo sub
+                // sub e o indentificador de usuario
+                .getSubject();
     }
 }
